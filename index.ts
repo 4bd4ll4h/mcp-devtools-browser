@@ -1,44 +1,36 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { z } from "zod";
-
+import {
+  registerOpenPageTool,
+  registerListPagesTool,
+  registerReloadPageTool,
+  registerClosePageTool,
+  registerNavigateTool,
+  registerGoBackTool,
+  registerGoForwardTool
+} from "./src/tools/toolsRegister.js";
 
 const server = new McpServer({
-    name: "My App",
+    name: "puppteer-developer-browser-server",
     version: "1.0.0"
   });
 
-// make a echo server tool
-server.tool(
-    "echo",
-    {
-      text: z.string()
-    },
-    async ({ text }) => ({
-      content: [{
-        type: "text",
-        text
-      }]
-    })
-  );
 
-server.tool(
-    "calculate-bmi",
-    {
-      weightKg: z.number(),
-      heightM: z.number()
-    },
-    async ({ weightKg, heightM }) => ({
-      content: [{
-        type: "text",
-        text: String(weightKg / (heightM * heightM))
-      }]
-    })
-  );
+registerOpenPageTool(server);
+registerListPagesTool(server);
+registerReloadPageTool(server);
+registerClosePageTool(server);
+registerNavigateTool(server);
+registerGoBackTool(server);
+registerGoForwardTool(server);
+
 
   // Start receiving messages on stdin and sending messages on stdout
-const transport = new StdioServerTransport();
-await server.connect(transport);
+async function main() {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  console.log("Server started...");
+}
 
-console.log("Server started...");
+main().catch(console.error);

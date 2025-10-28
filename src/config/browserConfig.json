@@ -1,0 +1,14 @@
+{
+  "headless": false,
+  "defaultViewport": {
+    "width": 1400,
+    "height": 900
+  },
+  "slowMo": 0,
+  "args": [
+    "--disable-infobars",
+    "--no-sandbox"
+  ],
+  "idlePageTimeoutMs": 120000, 
+  "maxPages": 6
+}

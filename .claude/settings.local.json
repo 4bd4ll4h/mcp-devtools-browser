@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc --noEmit index.ts)",
+      "Bash(npx tsc)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npm run build)",
+      "Bash(node -e \"require(''typescript/lib/tsc.js'')\" --noEmit)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
