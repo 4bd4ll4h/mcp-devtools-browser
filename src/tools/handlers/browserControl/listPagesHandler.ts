@@ -22,7 +22,6 @@ export async function listPagesHandler(args: ListPagesArgs): Promise<ListPagesRe
     }))
   );
 
-  console.log(`📄 Found ${resolvedPages.length} open pages`);
 
   return {
     pages: resolvedPages,

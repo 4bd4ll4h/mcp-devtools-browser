@@ -8,7 +8,13 @@ import {
   registerClosePageTool,
   registerNavigateTool,
   registerGoBackTool,
-  registerGoForwardTool
+  registerGoForwardTool,
+  registerClickTool,
+  registerTypeTool,
+  registerPressKeyTool,
+  registerScrollTool,
+  registerScrollToBottomTool,
+  registerHoverTool
 } from "./src/tools/toolsRegister.js";
 
 const server = new McpServer({
@@ -24,13 +30,18 @@ registerClosePageTool(server);
 registerNavigateTool(server);
 registerGoBackTool(server);
 registerGoForwardTool(server);
+registerClickTool(server);
+registerTypeTool(server);
+registerPressKeyTool(server);
+registerScrollTool(server);
+registerScrollToBottomTool(server);
+registerHoverTool(server);
 
 
   // Start receiving messages on stdin and sending messages on stdout
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.log("Server started...");
 }
 
 main().catch(console.error);

@@ -22,19 +22,15 @@ export async function goForwardHandler(args: GoForwardArgs): Promise<GoForwardRe
       throw new Error("Cannot go forward - no forward history available");
     }
 
-    const previousUrl = page.url();
-    await page.goForward();
-
-    // Wait for navigation to complete
-    await page.waitForNavigation({
-      waitUntil: "networkidle2",
+    await page.goForward({
+      waitUntil: "domcontentloaded",
       timeout: 30000,
     });
+
 
     const title = await page.title().catch(() => null);
     const currentUrl = page.url();
 
-    console.log(`▶️ Navigated forward on page ${pageId}: ${previousUrl} → ${currentUrl}`);
 
     return {
       pageId,

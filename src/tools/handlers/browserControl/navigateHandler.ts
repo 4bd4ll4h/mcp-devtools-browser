@@ -22,7 +22,6 @@ export async function navigateHandler(args: NavigateArgs): Promise<NavigateResul
     const finalUrl = page.url();
     const status = response?.status() || 0;
 
-    console.log(`🌐 Navigated page ${pageId} to: ${finalUrl} (status: ${status})`);
 
     return {
       pageId,

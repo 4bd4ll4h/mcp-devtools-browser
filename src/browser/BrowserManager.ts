@@ -42,7 +42,6 @@ export class BrowserManager {
       this.browser = await puppeteer.launch(this.config);
       this.setupCrashHandler();
       this.startCleanupRoutine();
-      console.log("✅ Browser launched.");
     } catch (err) {
       console.error("❌ Failed to launch browser:", err);
     }
@@ -50,7 +49,6 @@ export class BrowserManager {
 
   private setupCrashHandler() {
     this.browser!.on("disconnected", async () => {
-      console.warn("⚠️ Browser crashed! Restarting...");
       await this.restartBrowser();
     });
   }
@@ -69,7 +67,6 @@ export class BrowserManager {
         await page.close();
       }
       await this.browser.close();
-      console.log("🧹 Browser closed and pages cleaned.");
 
       this.browser = null;
     } catch (err) {
@@ -121,7 +118,6 @@ export class BrowserManager {
     try {
       await tracked.page.close();
       this.pages.delete(pageId);
-      console.log(`✅ Closed page: ${pageId}`);
     } catch (err) {
       console.error(`❌ Failed to close page ${pageId}:`, err);
       throw new Error(`Failed to close page: ${err instanceof Error ? err.message : String(err)}`);
@@ -143,7 +139,6 @@ export class BrowserManager {
 
       for (const [id, tracked] of Array.from(this.pages.entries())) {
         if (now - tracked.lastActivity > this.config.idlePageTimeoutMs) {
-          console.log(`⏳ Closing idle page: ${id}`);
           tracked.page.close();
           this.pages.delete(id);
         }

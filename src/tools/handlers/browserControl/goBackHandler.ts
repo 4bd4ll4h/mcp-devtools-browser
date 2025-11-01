@@ -19,19 +19,13 @@ export async function goBackHandler(args: GoBackArgs): Promise<GoBackResult> {
       throw new Error("Cannot go back - no history available");
     }
 
-    const previousUrl = page.url();
-    await page.goBack();
-
-    // Wait for navigation to complete
-    await page.waitForNavigation({
-      waitUntil: "networkidle2",
+    await page.goBack({
+      waitUntil: "domcontentloaded",
       timeout: 30000,
     });
-
     const title = await page.title().catch(() => null);
     const currentUrl = page.url();
 
-    console.log(`◀️ Navigated back on page ${pageId}: ${previousUrl} → ${currentUrl}`);
 
     return {
       pageId,

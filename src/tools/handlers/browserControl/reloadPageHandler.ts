@@ -27,7 +27,6 @@ export async function reloadPageHandler(args: ReloadPageArgs): Promise<ReloadPag
     const status = response?.status() || 0;
     const finalUrl = page.url();
 
-    console.log(`🔄 Reloaded page ${pageId}: ${finalUrl} (status: ${status})`);
 
     return {
       pageId,

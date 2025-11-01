@@ -30,7 +30,6 @@ export async function openPageHandler(args: OpenPageArgs): Promise<OpenPageResul
     const status = response?.status() || 0;
     const finalUrl = page.url();
 
-    console.log(`🌐 Opened page: ${finalUrl} (status: ${status})`);
 
     return {
       pageId,
