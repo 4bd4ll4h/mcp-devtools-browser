@@ -1,8 +1,11 @@
 import { BrowserManager } from "../../../browser/BrowserManager.js";
 import { ScrollArgs, ScrollResult } from "../../../schema/toolsSchema.js";
+import { browserManagerExtensions } from "../../../tools/toolsRegister.js";
 
 export async function scrollHandler(args: ScrollArgs): Promise<ScrollResult> {
   const { pageId, x, y, selector } = args;
+
+  const startTime = Date.now();
 
   const browserManager = BrowserManager.getInstance();
 
@@ -11,6 +14,9 @@ export async function scrollHandler(args: ScrollArgs): Promise<ScrollResult> {
   }
 
   const page = browserManager.getPage(pageId);
+
+  // Record tool invocation event
+  await browserManagerExtensions.recordToolInvocation(pageId, 'scroll', args);
 
   try {
     if (selector) {
@@ -35,11 +41,24 @@ export async function scrollHandler(args: ScrollArgs): Promise<ScrollResult> {
       throw new Error("Either selector or x/y coordinates must be provided");
     }
 
+    const executionTime = Date.now() - startTime;
+
+    // Record tool result event
+    await browserManagerExtensions.recordToolResult(pageId, 'scroll', {
+      pageId,
+      success: true
+    }, executionTime);
+
     return {
       pageId,
       success: true,
     };
   } catch (err: any) {
+    const executionTime = Date.now() - startTime;
+
+    // Record tool error event
+    await browserManagerExtensions.recordToolError(pageId, 'scroll', err, executionTime);
+
     console.error(`❌ Failed to scroll on page ${pageId}:`, err.message);
     throw new Error(`Scroll failed: ${err.message}`);
   }

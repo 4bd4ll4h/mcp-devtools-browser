@@ -9,6 +9,6 @@
     "--disable-infobars",
     "--no-sandbox"
   ],
-  "idlePageTimeoutMs": 120000, 
+  "idlePageTimeoutMs": 3600000, 
   "maxPages": 6
 }

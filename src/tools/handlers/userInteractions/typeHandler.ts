@@ -1,8 +1,11 @@
 import { BrowserManager } from "../../../browser/BrowserManager.js";
 import { TypeArgs, TypeResult } from "../../../schema/toolsSchema.js";
+import { browserManagerExtensions } from "../../../tools/toolsRegister.js";
 
 export async function typeHandler(args: TypeArgs): Promise<TypeResult> {
   const { pageId, selector, text, delayMs = 0, clear = false } = args;
+
+  const startTime = Date.now();
 
   const browserManager = BrowserManager.getInstance();
 
@@ -11,6 +14,9 @@ export async function typeHandler(args: TypeArgs): Promise<TypeResult> {
   }
 
   const page = browserManager.getPage(pageId);
+
+  // Record tool invocation event
+  await browserManagerExtensions.recordToolInvocation(pageId, 'type', args);
 
   try {
     // Wait for the selector to be visible
@@ -35,11 +41,24 @@ export async function typeHandler(args: TypeArgs): Promise<TypeResult> {
     // Type the text with optional delay
     await page.type(selector, text, { delay: delayMs });
 
+    const executionTime = Date.now() - startTime;
+
+    // Record tool result event
+    await browserManagerExtensions.recordToolResult(pageId, 'type', {
+      pageId,
+      success: true
+    }, executionTime);
+
     return {
       pageId,
       success: true,
     };
   } catch (err: any) {
+    const executionTime = Date.now() - startTime;
+
+    // Record tool error event
+    await browserManagerExtensions.recordToolError(pageId, 'type', err, executionTime);
+
     console.error(`❌ Failed to type text into selector "${selector}" on page ${pageId}:`, err.message);
     throw new Error(`Type failed: ${err.message}`);
   }

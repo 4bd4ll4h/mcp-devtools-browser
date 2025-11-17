@@ -5,7 +5,15 @@
       "Bash(npx tsc)",
       "Bash(npx tsc --noEmit)",
       "Bash(npm run build)",
-      "Bash(node -e \"require(''typescript/lib/tsc.js'')\" --noEmit)"
+      "Bash(node -e \"require(''typescript/lib/tsc.js'')\" --noEmit)",
+      "Bash(mkdir:*)",
+      "Bash(dir:*)",
+      "Bash(node debug_uri_template.js:*)",
+      "Bash(node debug_uri_template2.js:*)",
+      "Bash(node debug_uri_template3.js:*)",
+      "Bash(npm test)",
+      "Bash(npm run)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

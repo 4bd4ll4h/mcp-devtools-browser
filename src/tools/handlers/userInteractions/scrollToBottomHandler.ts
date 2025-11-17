@@ -1,8 +1,11 @@
 import { BrowserManager } from "../../../browser/BrowserManager.js";
 import { ScrollToBottomArgs, ScrollToBottomResult } from "../../../schema/toolsSchema.js";
+import { browserManagerExtensions } from "../../../tools/toolsRegister.js";
 
 export async function scrollToBottomHandler(args: ScrollToBottomArgs): Promise<ScrollToBottomResult> {
   const { pageId, timeoutMs = 30000 } = args;
+
+  const startTime = Date.now();
 
   const browserManager = BrowserManager.getInstance();
 
@@ -12,13 +15,16 @@ export async function scrollToBottomHandler(args: ScrollToBottomArgs): Promise<S
 
   const page = browserManager.getPage(pageId);
 
+  // Record tool invocation event
+  await browserManagerExtensions.recordToolInvocation(pageId, 'scroll_to_bottom', args);
+
   try {
-    const startTime = Date.now();
+    const scrollStartTime = Date.now();
     let previousHeight = 0;
     let currentHeight = 0;
 
     // Keep scrolling until we reach the bottom or timeout
-    while (Date.now() - startTime < timeoutMs) {
+    while (Date.now() - scrollStartTime < timeoutMs) {
       // Get current scroll height
       currentHeight = await page.evaluate(() => {
         return document.documentElement.scrollHeight;
@@ -45,11 +51,24 @@ export async function scrollToBottomHandler(args: ScrollToBottomArgs): Promise<S
       previousHeight = currentHeight;
     }
 
+    const executionTime = Date.now() - startTime;
+
+    // Record tool result event
+    await browserManagerExtensions.recordToolResult(pageId, 'scroll_to_bottom', {
+      pageId,
+      success: true
+    }, executionTime);
+
     return {
       pageId,
       success: true,
     };
   } catch (err: any) {
+    const executionTime = Date.now() - startTime;
+
+    // Record tool error event
+    await browserManagerExtensions.recordToolError(pageId, 'scroll_to_bottom', err, executionTime);
+
     console.error(`❌ Failed to scroll to bottom on page ${pageId}:`, err.message);
     throw new Error(`Scroll to bottom failed: ${err.message}`);
   }
