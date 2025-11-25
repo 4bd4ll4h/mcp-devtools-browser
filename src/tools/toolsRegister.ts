@@ -16,6 +16,7 @@ import { scrollToBottomHandler } from "./handlers/userInteractions/scrollToBotto
 import { hoverHandler } from "./handlers/userInteractions/hoverHandler.js";
 import { getTreeHandler } from "./handlers/inspection/getTreeHandler.js";
 import { getEventLogHandler } from "./handlers/inspection/getEventLogHandler.js";
+import { executeJsHandler } from "./handlers/inspection/executeJsHandler.js";
 import { getScreenshotHandler } from "../resources/handlers/getScreenshotHandler.js";
 import { getCssHandler } from "../resources/handlers/getCssHandler.js";
 import { getDomHandler } from "../resources/handlers/getDomHandler.js";
@@ -82,7 +83,11 @@ import {
   GetMarkdownResult,
   GetEventLogArgs,
   getEventLogInputSchema,
-  GetEventLogResult
+  GetEventLogResult,
+  ExecuteJsArgs,
+  executeJsInputSchema,
+  ExecuteJsResult,
+  toonResponse
 } from "../schema/toolsSchema.js";
 
 export function registerOpenPageTool(server: McpServer) {
@@ -97,7 +102,7 @@ server.registerTool(
     async (args: OpenPageArgs) => {
     try {
       const result: OpenPageResult = await openPageHandler(args);
-      return structuredResponse(result);
+      return toonResponse(result);
     } catch (err) {
       return errorResponse(err);
     }
@@ -118,7 +123,7 @@ export function registerListPagesTool(server: McpServer) {
     async (args: ListPagesArgs) => {
       try {
         const result: ListPagesResult = await listPagesHandler(args);
-        return structuredResponse(result);
+        return toonResponse(result);
       } catch (err) {
         return errorResponse(err);
       }
@@ -138,7 +143,7 @@ export function registerReloadPageTool(server: McpServer) {
     async (args: ReloadPageArgs) => {
       try {
         const result: ReloadPageResult = await reloadPageHandler(args);
-        return structuredResponse(result);
+        return toonResponse(result);
       } catch (err) {
         return errorResponse(err);
       }
@@ -158,7 +163,7 @@ export function registerClosePageTool(server: McpServer) {
     async (args: ClosePageArgs) => {
       try {
         const result: ClosePageResult = await closePageHandler(args);
-        return structuredResponse(result);
+        return toonResponse(result);
       } catch (err) {
         return errorResponse(err);
       }
@@ -178,7 +183,7 @@ export function registerNavigateTool(server: McpServer) {
     async (args: NavigateArgs) => {
       try {
         const result: NavigateResult = await navigateHandler(args);
-        return structuredResponse(result);
+        return toonResponse(result);
       } catch (err) {
         return errorResponse(err);
       }
@@ -198,7 +203,7 @@ export function registerGoBackTool(server: McpServer) {
     async (args: GoBackArgs) => {
       try {
         const result: GoBackResult = await goBackHandler(args);
-        return structuredResponse(result);
+        return toonResponse(result);
       } catch (err) {
         return errorResponse(err);
       }
@@ -218,7 +223,7 @@ export function registerGoForwardTool(server: McpServer) {
     async (args: GoForwardArgs) => {
       try {
         const result: GoForwardResult = await goForwardHandler(args);
-        return structuredResponse(result);
+        return toonResponse(result);
       } catch (err) {
         return errorResponse(err);
       }
@@ -238,7 +243,7 @@ export function registerClickTool(server: McpServer) {
     async (args: ClickArgs) => {
       try {
         const result: ClickResult = await clickHandler(args);
-        return structuredResponse(result);
+        return toonResponse(result);
       } catch (err) {
         return errorResponse(err);
       }
@@ -258,7 +263,7 @@ export function registerTypeTool(server: McpServer) {
     async (args: TypeArgs) => {
       try {
         const result: TypeResult = await typeHandler(args);
-        return structuredResponse(result);
+        return toonResponse(result);
       } catch (err) {
         return errorResponse(err);
       }
@@ -278,7 +283,7 @@ export function registerPressKeyTool(server: McpServer) {
     async (args: PressKeyArgs) => {
       try {
         const result: PressKeyResult = await pressKeyHandler(args);
-        return structuredResponse(result);
+        return toonResponse(result);
       } catch (err) {
         return errorResponse(err);
       }
@@ -298,7 +303,7 @@ export function registerScrollTool(server: McpServer) {
     async (args: ScrollArgs) => {
       try {
         const result: ScrollResult = await scrollHandler(args);
-        return structuredResponse(result);
+        return toonResponse(result);
       } catch (err) {
         return errorResponse(err);
       }
@@ -318,7 +323,7 @@ export function registerScrollToBottomTool(server: McpServer) {
     async (args: ScrollToBottomArgs) => {
       try {
         const result: ScrollToBottomResult = await scrollToBottomHandler(args);
-        return structuredResponse(result);
+        return toonResponse(result);
       } catch (err) {
         return errorResponse(err);
       }
@@ -338,7 +343,7 @@ export function registerHoverTool(server: McpServer) {
     async (args: HoverArgs) => {
       try {
         const result: HoverResult = await hoverHandler(args);
-        return structuredResponse(result);
+        return toonResponse(result);
       } catch (err) {
         return errorResponse(err);
       }
@@ -358,7 +363,7 @@ export function registerGetTreeTool(server: McpServer) {
     async (args: GetTreeArgs) => {
       try {
         const result: GetTreeResult = await getTreeHandler(args);
-        return structuredResponse(result);
+        return toonResponse(result);
       } catch (err) {
         return errorResponse(err);
       }
@@ -398,7 +403,7 @@ export function registerGetCssTool(server: McpServer) {
     async (args: GetCssArgs) => {
       try {
         const result: GetCssResult = await getCssHandler(args);
-        return structuredResponse(result);
+        return toonResponse(result);
       } catch (err) {
         return errorResponse(err);
       }
@@ -411,14 +416,14 @@ export function registerGetDomTool(server: McpServer) {
     "get_dom",
     {
       title: "Get structured DOM tree",
-      description: "Returns the complete DOM tree structure with smart text filtering. Use for comprehensive page analysis, content extraction, and understanding the full document structure.",
+      description: "Returns a structured DOM tree for a specific element. REQUIRES a CSS selector - do not use 'body' or 'html' as the response will be too large. Use depth parameter to control traversal depth (default: 10). All optional properties default to false to reduce response size. Text retrieval follows get_tree behavior - only includes direct child text.",
       inputSchema: getDomInputSchema.shape,
     },
 
     async (args: GetDomArgs) => {
       try {
         const result: GetDomResult = await getDomHandler(args);
-        return structuredResponse(result);
+        return toonResponse(result);
       } catch (err) {
         return errorResponse(err);
       }
@@ -458,7 +463,27 @@ export function registerGetEventLogTool(server: McpServer) {
     async (args: GetEventLogArgs) => {
       try {
         const result: GetEventLogResult = await getEventLogHandler(args);
-        return structuredResponse(result);
+        return toonResponse(result);
+      } catch (err) {
+        return errorResponse(err);
+      }
+    }
+  )
+}
+
+export function registerExecuteJsTool(server: McpServer) {
+  server.registerTool(
+    "execute_js",
+    {
+      title: "Execute JavaScript on page",
+      description: "Executes custom JavaScript code in the browser context. Use for DOM manipulation, data extraction, form interactions, or any custom browser automation tasks. Returns the result of the JavaScript execution.",
+      inputSchema: executeJsInputSchema.shape,
+    },
+
+    async (args: ExecuteJsArgs) => {
+      try {
+        const result: ExecuteJsResult = await executeJsHandler(args);
+        return toonResponse(result);
       } catch (err) {
         return errorResponse(err);
       }

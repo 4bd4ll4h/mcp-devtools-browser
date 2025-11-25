@@ -13,7 +13,9 @@
       "Bash(node debug_uri_template3.js:*)",
       "Bash(npm test)",
       "Bash(npm run)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(git clone:*)",
+      "Bash(cd:*)"
     ],
     "deny": [],
     "ask": []

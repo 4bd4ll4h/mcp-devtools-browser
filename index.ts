@@ -19,12 +19,13 @@ import {
   registerGetCssTool,
   registerGetDomTool,
   registerGetMarkdownTool,
-  registerGetEventLogTool
+  registerGetEventLogTool,
+  registerExecuteJsTool
 } from "./src/tools/toolsRegister.js";
 import { registerGetScreenshotResource, registerGetCssResource, registerGetDomResource, registerGetMarkdownResource, registerGetEventLogResource } from "./src/resources/resourcesRegister.js";
 
 const server = new McpServer({
-    name: "puppteer-developer-browser-server",
+    name: "developer-browser",
     version: "1.0.0"
   });
 
@@ -48,12 +49,13 @@ registerGetCssTool(server);
 registerGetDomTool(server);
 registerGetMarkdownTool(server);
 registerGetEventLogTool(server);
+registerExecuteJsTool(server);
 
-registerGetScreenshotResource(server);
-registerGetCssResource(server);
-registerGetDomResource(server);
-registerGetMarkdownResource(server);
-registerGetEventLogResource(server);
+// registerGetScreenshotResource(server);
+// registerGetCssResource(server);
+// registerGetDomResource(server);
+// registerGetMarkdownResource(server);
+// registerGetEventLogResource(server);
 
 
   // Start receiving messages on stdin and sending messages on stdout

@@ -17,25 +17,28 @@ import {
   getMarkdownInputSchema,
   GetMarkdownResult,
 } from "../schema/resourcesSchema.js";
-import { get } from "http";
 import { getPageIds } from "../helper/methods.js";
-import { getEventLogHandler } from "./handlers/getEventLogHandler.js";
 import {
-  GetEventLogArgs,
   getEventLogInputSchema,
-  GetEventLogResult,
 } from "../schema/resourcesSchema.js";
 
 export function registerGetScreenshotResource(server: McpServer) {
   const screenshotTemplate = new ResourceTemplate(
     "screenshot://{pageId}",
     {
-      list: undefined, // No listing for dynamic screenshots
+      list: async () => {
+        const pageIds = getPageIds();
+        return {
+          resources: pageIds.map(pageId => ({
+            uri: `screenshot://${pageId}`,
+            name: `Screenshot for page ${pageId}`,
+            description: "Capture screenshot of browser page",
+            mimeType: "image/png"
+          }))
+        };
+      },
       complete: {
-        pageId: async () => {
-          // This would ideally return available page IDs, but for now return empty
-          return [];
-        },
+        pageId: async () => getPageIds(),
       },
     }
   );
@@ -90,12 +93,19 @@ export function registerGetCssResource(server: McpServer) {
   const cssTemplate = new ResourceTemplate(
     "css://{pageId}",
     {
-      list: undefined, // No listing for dynamic CSS
+      list: async () => {
+        const pageIds = getPageIds();
+        return {
+          resources: pageIds.map(pageId => ({
+            uri: `css://${pageId}`,
+            name: `CSS for page ${pageId}`,
+            description: "Get CSS information from browser page",
+            mimeType: "text/css"
+          }))
+        };
+      },
       complete: {
-        pageId: async () => {
-          // This would ideally return available page IDs, but for now return empty
-          return [];
-        },
+        pageId: async () => getPageIds(),
       },
     }
   );
@@ -144,8 +154,17 @@ export function registerGetDomResource(server: McpServer) {
   const domTemplate = new ResourceTemplate(
     "dom://{pageId}{?*}",
     {
-      list: undefined, 
-      
+      list: async () => {
+        const pageIds = getPageIds();
+        return {
+          resources: pageIds.map(pageId => ({
+            uri: `dom://${pageId}`,
+            name: `DOM for page ${pageId}`,
+            description: "Get structured DOM tree from browser page",
+            mimeType: "application/json"
+          }))
+        };
+      },
       complete: {
         pageId: async () => getPageIds(),
         selector: async () => {
@@ -184,18 +203,24 @@ export function registerGetDomResource(server: McpServer) {
         
         // Extract optional parameters from variables (not from URI search params)
         // ResourceTemplate passes query params as variables
-        const includeAttributes = variables.includeAttributes as string || 'true';
-        const includeText = variables.includeText as string || 'true';
-        const includeChildren = variables.includeChildren as string || 'true';
-        const selector = variables.selector as string || undefined;
-       
+        const includeAttributes = variables.includeAttributes as string || 'false';
+        const includeText = variables.includeText as string || 'false';
+        const includeFullText = variables.includeFullText as string || 'false';
+        const depth = parseInt(variables.depth as string) || 10;
+        const selector = variables.selector as string;
+
+        if (!selector) {
+          throw new Error("selector is required for get_dom resource");
+        }
+
         // Create args from variables with proper type conversion
         const args: GetDomArgs = {
           pageId,
-          selector: selector || undefined,
+          selector,
+          depth,
           includeAttributes: includeAttributes === "true",
           includeText: includeText === "true",
-          includeChildren: includeChildren === "true",
+          includeFullText: includeFullText === "true",
         };
         
         const result: GetDomResult = await getDomHandler(args);
@@ -223,12 +248,19 @@ export function registerGetMarkdownResource(server: McpServer) {
   const markdownTemplate = new ResourceTemplate(
     "markdown://{pageId}",
     {
-      list: undefined, // No listing for dynamic markdown
+      list: async () => {
+        const pageIds = getPageIds();
+        return {
+          resources: pageIds.map(pageId => ({
+            uri: `markdown://${pageId}`,
+            name: `Markdown for page ${pageId}`,
+            description: "Convert web page content to Markdown format",
+            mimeType: "text/markdown"
+          }))
+        };
+      },
       complete: {
-        pageId: async () => {
-          // This would ideally return available page IDs, but for now return empty
-          return [];
-        },
+        pageId: async () => getPageIds(),
       },
     }
   );
@@ -289,7 +321,16 @@ export function registerGetEventLogResource(server: McpServer) {
   const eventLogTemplate = new ResourceTemplate(
     "eventlog://{?*}",
     {
-      list: undefined, // No listing for dynamic event logs
+      list: async () => {
+        return {
+          resources: [{
+            uri: "eventlog://",
+            name: "Browser Event Log",
+            description: "Get comprehensive browser session event log",
+            mimeType: "application/json"
+          }]
+        };
+      },
       complete: {
         startTime: async () => [],
         endTime: async () => [],

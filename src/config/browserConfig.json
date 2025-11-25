@@ -1,5 +1,5 @@
 {
-  "headless": false,
+  "headless":  false,
   "defaultViewport": {
     "width": 1400,
     "height": 900

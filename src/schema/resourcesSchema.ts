@@ -50,10 +50,11 @@ export type GetCssResult = z.infer<typeof getCssOutputSchema>;
 // Get DOM schemas
 export const getDomInputSchema = z.object({
   pageId: z.string(),
-  selector: z.string().optional(), // Optional: get DOM for specific element(s)
-  includeAttributes: z.boolean().optional().default(true), // Include element attributes
-  includeText: z.boolean().optional().default(true), // Include text content
-  includeChildren: z.boolean().optional().default(true), // Include child elements
+  selector: z.string(), // Required: get DOM for specific element(s) - do not use body or html as response will be too large
+  depth: z.number().min(1).optional().default(10), // Maximum depth to traverse (1-infinity)
+  includeAttributes: z.boolean().optional().default(false), // Include element attributes
+  includeText: z.boolean().optional().default(false), // Include text content
+  includeFullText: z.boolean().optional().default(false), // Include full text without truncation
 });
 
 export type GetDomArgs = z.infer<typeof getDomInputSchema>;

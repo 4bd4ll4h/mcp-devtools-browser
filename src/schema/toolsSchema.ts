@@ -75,6 +75,28 @@ export function textResponse(message: string) {
   };
 }
 
+// Import toon for JSON encoding
+import { encode } from "@toon-format/toon";
+
+export function toonResponse(data: any) {
+  try {
+    const toonEncoded = encode(data);
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: toonEncoded,
+          mimeType: "application/toon+json",
+        },
+      ],
+    };
+  } catch (error) {
+    // Fallback to regular JSON if toon encoding fails
+    console.warn("Toon encoding failed, falling back to JSON:", error);
+    return structuredResponse(data);
+  }
+}
+
 // Close Page schemas
 export const closePageInputSchema = z.object({
   pageId: z.string(),
@@ -246,7 +268,6 @@ export type HoverResult = z.infer<typeof hoverOutputSchema>;
 // Get Tree schemas
 export const getTreeInputSchema = z.object({
   pageId: z.string(),
-  maxDepth: z.number().optional().default(10),
   includeHidden: z.boolean().optional().default(false),
 });
 
@@ -255,25 +276,21 @@ export type GetTreeArgs = z.infer<typeof getTreeInputSchema>;
 // Enhanced tree node schema with selectors and identifiers
 const treeNodeSchemaBase = {
   tag: z.string(),
-  role: z.string(),
+  //role: z.string(),
   name: z.string().optional(),
   value: z.string().optional(),
-  description: z.string().optional(),
-  state: z.record(z.any()).optional(),
-  attributes: z.record(z.string(), z.string()).optional(),
+ // description: z.string().optional(),
+ // state: z.record(z.any()).optional(),
+  //attributes: z.record(z.string(), z.string()).optional(),
   selectors: z.object({
     css: z.string(),
     xpath: z.string().optional(),
   }),
-  isInteractive: z.boolean(),
-  isFocusable: z.boolean(),
-  hasAria: z.boolean(),
-  boundingBox: z.object({
-    x: z.number(),
-    y: z.number(),
-    width: z.number(),
-    height: z.number(),
-  }).optional(),
+  //isInteractive: z.boolean(),
+  //isFocusable: z.boolean(),
+  //isVisible: z.boolean().optional(),
+  //hasAria: z.boolean(),
+  boundingBox: z.array(z.number()).length(4).optional(), // [x, y, width, height]
   children: z.array(z.any()).optional(),
 };
 
@@ -338,10 +355,11 @@ export type GetCssResult = z.infer<typeof getCssOutputSchema>;
 // Get DOM schemas
 export const getDomInputSchema = z.object({
   pageId: z.string(),
-  selector: z.string().optional(), // Optional: get DOM for specific element(s)
-  includeAttributes: z.boolean().optional().default(true), // Include element attributes
-  includeText: z.boolean().optional().default(true), // Include text content
-  includeChildren: z.boolean().optional().default(true), // Include child elements
+  selector: z.string(), // Required: get DOM for specific element(s) - do not use body or html as response will be too large
+  depth: z.number().min(1).optional().default(10), // Maximum depth to traverse (1-infinity)
+  includeAttributes: z.boolean().optional().default(false), // Include element attributes
+  includeText: z.boolean().optional().default(false), // Include text content
+  includeFullText: z.boolean().optional().default(false), // Include full text without truncation
 });
 
 export type GetDomArgs = z.infer<typeof getDomInputSchema>;
@@ -436,6 +454,26 @@ export const getEventLogOutputSchema = z.object({
 });
 
 export type GetEventLogResult = z.infer<typeof getEventLogOutputSchema>;
+
+// Execute JavaScript schemas
+export const executeJsInputSchema = z.object({
+  pageId: z.string(),
+  script: z.string(),
+  args: z.array(z.any()).optional(),
+  timeoutMs: z.number().optional(),
+});
+
+export type ExecuteJsArgs = z.infer<typeof executeJsInputSchema>;
+
+export const executeJsOutputSchema = z.object({
+  pageId: z.string(),
+  url: z.string(),
+  title: z.string().nullable(),
+  result: z.any(),
+  success: z.boolean(),
+});
+
+export type ExecuteJsResult = z.infer<typeof executeJsOutputSchema>;
 
 export function errorResponse(err: any) {
   return {

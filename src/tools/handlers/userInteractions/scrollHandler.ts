@@ -32,13 +32,15 @@ export async function scrollHandler(args: ScrollArgs): Promise<ScrollResult> {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       }, selector);
-    } else if (x !== undefined && y !== undefined) {
-      // Scroll by specific offset
+    } else if (x !== undefined || y !== undefined) {
+      // Scroll by specific offset - use 0 for missing coordinates
+      const scrollX = x || 0;
+      const scrollY = y || 0;
       await page.evaluate((scrollX, scrollY) => {
         window.scrollBy(scrollX, scrollY);
-      }, x, y);
+      }, scrollX, scrollY);
     } else {
-      throw new Error("Either selector or x/y coordinates must be provided");
+      throw new Error("Either selector or at least one coordinate (x or y) must be provided");
     }
 
     const executionTime = Date.now() - startTime;
