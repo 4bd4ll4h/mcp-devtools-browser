@@ -1,7 +1,56 @@
 
-# **MCP Web Scraping Assistant — Project Specification**
+# Puppeteer Developer Browser MCP
 
-## **Project Overview**
+[![npm version](https://img.shields.io/npm/v/@4bd4ll4h/mcp-devtools-browser.svg)](https://www.npmjs.com/package/@4bd4ll4h/mcp-devtools-browser)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6+-blue.svg)](https://www.typescriptlang.org/)
+
+> A powerful Model Context Protocol (MCP) server that provides LLMs with browser automation capabilities using Puppeteer.
+
+## 🚀 Quick Start
+
+```bash
+npm install -g @4bd4ll4h/mcp-devtools-browser
+```
+
+Add to your MCP client configuration:
+
+```json
+{
+  "mcpServers": {
+    "devtools-browser": {
+      "command": "@4bd4ll4h/mcp-devtools-browser"
+    }
+  }
+}
+```
+
+## ✨ Features
+
+- **Browser Automation**: Open, navigate, and control browser pages
+- **DOM Inspection**: Extract structured DOM data with accessibility focus
+- **Network Monitoring**: Capture and analyze network requests
+- **Event Logging**: Comprehensive session tracking and debugging
+- **User Interactions**: Click, type, scroll, hover, and more
+- **Visual Capture**: Screenshots and visual analysis
+- **Resource Management**: Automatic cleanup and memory management
+
+## 📖 Documentation
+
+- [API Reference](API.md) - Complete tool and resource documentation
+- [Examples](EXAMPLES.md) - Usage examples and tutorials
+- [Development Guide](DEVELOPMENT.md) - Architecture and contribution guidelines
+- [Contributing](CONTRIBUTING.md) - How to contribute to this project
+
+## 🤝 Contributing
+
+We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
+
+---
+
+## Project Specification
+
+### **Project Overview**
 
 This project aims to build a **Model Context Protocol (MCP)** server that assists an LLM in generating **high-quality, reliable web-scraping scripts** using **TypeScript + Puppeteer**.
 
