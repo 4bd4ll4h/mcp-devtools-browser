@@ -1,6 +1,6 @@
 {
     "name": "puppeteer-developer-browser-mcp",
-    "version": "0.7.2",
+    "version": "0.0.1",
     "description": "Exprimental MCP server using Puppeteer to control a browser instance foucsed on developer needs.",
     "license": "MIT",
     "author": "abdallah abdelmahmoud",
@@ -8,11 +8,11 @@
     "bugs": "",
     "repository": {
         "type": "git",
-        "url": ""
+        "url": "https://github.com/4bd4ll4h/mcp-devtools-browser"
     },
     "type": "module",
     "bin": {
-        "mcp-server-developer-browser": "dist/index.js"
+        "@4bd4ll4h/mcp-devtools-browser": "dist/index.js"
     },
     "files": [
         "dist"
