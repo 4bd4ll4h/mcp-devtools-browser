@@ -1,6 +1,6 @@
 {
     "name": "@4bd4ll4h/mcp-devtools-browser",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Exprimental MCP server using Puppeteer to control a browser instance foucsed on developer needs.",
     "license": "MIT",
     "author": "abdallah abdelmahmoud",
