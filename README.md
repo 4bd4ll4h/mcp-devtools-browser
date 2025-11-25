@@ -1,5 +1,5 @@
 
-# Puppeteer Developer Browser MCP
+# DevTool Broswer for developers
 
 [![npm version](https://img.shields.io/npm/v/@4bd4ll4h/mcp-devtools-browser.svg)](https://www.npmjs.com/package/@4bd4ll4h/mcp-devtools-browser)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -19,7 +19,8 @@ Add to your MCP client configuration:
 {
   "mcpServers": {
     "devtools-browser": {
-      "command": "@4bd4ll4h/mcp-devtools-browser"
+      "command": "npx",
+      "args": ["@4bd4ll4h/mcp-devtools-browser"]
     }
   }
 }
